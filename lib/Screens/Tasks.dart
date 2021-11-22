@@ -35,16 +35,17 @@ class TasksState extends State<Tasks>{
   DocumentReference ansRef;
   
   Future<void> configure() async{
-    final FirebaseApp app=await FirebaseApp.configure(
+    final FirebaseApp app=await FirebaseApp.initializeApp(
     name: 'companionbeta',
     options: const FirebaseOptions(
       googleAppID: '1:933028870179:android:ede06df604d42475',
       apiKey: 'AIzaSyCdSfHQoXvBPNyBd-NtXO4RB3MVB-gUE6A ',
-      projectID: 'companionbeta'
+      projectId: 'companionbeta', messagingSenderId: ''
     )
     );
+
     final FirebaseFirestore firestore= FirebaseFirestore (app: app);
-    await firestore.settings(timestampsInSnapshotsEnabled: true);
+    firestore.settings;
   }
 
   bool isDepressed(DocumentSnapshot document){
@@ -58,7 +59,7 @@ class TasksState extends State<Tasks>{
   @override
   void initState(){
     configure();
-    ansRef=Firestore.instance.collection("answers").document(userId);
+    ansRef=FirebaseFirestore.instance.collection("answers").doc(userId);
     addData();
     super.initState();
   }
@@ -66,7 +67,7 @@ class TasksState extends State<Tasks>{
   void updateTime(DocumentSnapshot document)async{
     
     if(document["hour"]==null)
-    await document.reference.updateData({
+    await document.reference.update({
       "hour":now.hour
     });
     assert(now.hour!=null);
@@ -74,7 +75,7 @@ class TasksState extends State<Tasks>{
       setState(() {
         timeUp=true;
       });
-      await  document.reference.updateData({
+      await  document.reference.update({
          "hour":document["hour"]+24
       });
     }
@@ -98,7 +99,7 @@ class TasksState extends State<Tasks>{
     
       
     child: StreamBuilder(
-          stream: Firestore.instance.collection("answers").snapshots(),
+          stream: FirebaseFirestore.instance.collection("answers").snapshots(),
           builder: (context, snapshot){
             if(!snapshot.hasData) return Text("Loading..");
             DocumentSnapshot doc=snapshot.data.documents[0];

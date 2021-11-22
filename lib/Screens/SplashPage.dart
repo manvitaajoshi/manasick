@@ -25,7 +25,7 @@ final FirebaseAuth _auth = FirebaseAuth.instance;
      _auth.authStateChanges
         .firstWhere((user) => user != null)
         .then((user) {
-          FirebaseFirestore.instance.collection("answers").doc(user.uid).setData({"uid":user.uid,
+          FirebaseFirestore.instance.collection("answers").doc(user.uid).set({"uid":user.uid,
           "answered" :false,
           "value":false,
           "notDone1":true,
